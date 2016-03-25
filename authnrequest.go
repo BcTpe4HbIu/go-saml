@@ -132,7 +132,7 @@ func NewAuthnRequest() *AuthnRequest {
 			AllowCreate: true,
 			Format:      "urn:oasis:names:tc:SAML:2.0:nameid-format:transient",
 		},
-		RequestedAuthnContext: RequestedAuthnContext{
+		/*RequestedAuthnContext: RequestedAuthnContext{
 			XMLName: xml.Name{
 				Local: "samlp:RequestedAuthnContext",
 			},
@@ -145,7 +145,7 @@ func NewAuthnRequest() *AuthnRequest {
 				SAML:      "urn:oasis:names:tc:SAML:2.0:assertion",
 				Transport: "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport",
 			},
-		},
+		},*/
 		Signature: Signature{
 			XMLName: xml.Name{
 				Local: "samlsig:Signature",
