@@ -362,10 +362,5 @@ func (r *Response) GetAttribute(name string) string {
 			return attr.AttributeValue.Value
 		}
 	}
-	for _, attr := range r.Assertion.AttributeStatement.Attributes {
-		if attr.Name == name || attr.FriendlyName == name {
-			return attr.AttributeValue.Value
-		}
-	}
 	return ""
 }
