@@ -56,7 +56,7 @@ func (r *Response) Validate(s *ServiceProviderSettings) error {
 		return errors.New("missing ID attribute on SAML Response")
 	}
 
-	if len(r.Assertion.ID) == 0 && len(r.EncryptedAssertion.Assertion.ID) == 0 {
+	if len(r.Assertion.ID) == 0 {
 		return errors.New("no Assertions")
 	}
 
@@ -129,6 +129,7 @@ func (r *Response) Decrypt(SPPrivateCertPath string) (*Response, error) {
 	authnResponse := &Response{}
 	err = xml.Unmarshal(decrypted_xml, &authnResponse)
 	authnResponse.originalString = string(decrypted_xml)
+	authnResponse.Assertion = *authnResponse.EncryptedAssertion.Assertion
 	return authnResponse, err
 }
 
@@ -356,6 +357,11 @@ func (r *Response) CompressedEncodedSignedString(privateKeyPath string) (string,
 
 // GetAttribute by Name or by FriendlyName. Return blank string if not found
 func (r *Response) GetAttribute(name string) string {
+	for _, attr := range r.Assertion.AttributeStatement.Attributes {
+		if attr.Name == name || attr.FriendlyName == name {
+			return attr.AttributeValue.Value
+		}
+	}
 	for _, attr := range r.Assertion.AttributeStatement.Attributes {
 		if attr.Name == name || attr.FriendlyName == name {
 			return attr.AttributeValue.Value
