@@ -56,7 +56,7 @@ func (r *Response) Validate(s *ServiceProviderSettings) error {
 		return errors.New("missing ID attribute on SAML Response")
 	}
 
-	if len(r.Assertion.ID) == 0 {
+	if len(r.Assertion.ID) == 0 && len(r.EncryptedAssertion.Assertion.ID) == 0 {
 		return errors.New("no Assertions")
 	}
 
