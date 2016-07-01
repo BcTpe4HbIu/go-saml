@@ -12,8 +12,8 @@ type AuthnRequest struct {
 	ProtocolBinding                string                `xml:"ProtocolBinding,attr"`
 	AssertionConsumerServiceURL    string                `xml:"AssertionConsumerServiceURL,attr"`
 	IssueInstant                   string                `xml:"IssueInstant,attr"`
-	AssertionConsumerServiceIndex  int                   `xml:"AssertionConsumerServiceIndex,attr"`
-	AttributeConsumingServiceIndex int                   `xml:"AttributeConsumingServiceIndex,attr"`
+	// AssertionConsumerServiceIndex  int                   `xml:"AssertionConsumerServiceIndex,attr"`
+	// AttributeConsumingServiceIndex int                   `xml:"AttributeConsumingServiceIndex,attr"`
 	Issuer                         Issuer                `xml:"Issuer"`
 	NameIDPolicy                   NameIDPolicy          `xml:"NameIDPolicy"`
 	RequestedAuthnContext          RequestedAuthnContext `xml:"RequestedAuthnContext"`
