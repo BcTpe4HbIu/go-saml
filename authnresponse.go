@@ -56,9 +56,9 @@ func (r *Response) Validate(s *ServiceProviderSettings) error {
 		return errors.New("missing ID attribute on SAML Response")
 	}
 
-	if len(r.Assertion.ID) == 0 {
-		return errors.New("no Assertions")
-	}
+	// if len(r.Assertion.ID) == 0 {
+	// 	return errors.New("no Assertions")
+	// }
 
 	if len(r.Assertion.Signature.SignatureValue.Value) == 0 {
 		return errors.New("no signature")
@@ -367,5 +367,5 @@ func (r *Response) GetAttribute(name string) (values []string) {
 			return
 		}
 	}
-	return 
+	return
 }
