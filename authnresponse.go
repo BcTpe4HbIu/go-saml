@@ -6,9 +6,6 @@ import (
 	"errors"
 	"time"
 
-	"log"
-	"fmt"
-
 	"github.com/BcTpe4HbIu/go-saml/util"
 )
 
@@ -51,7 +48,6 @@ func ParseDecodedResponse(responseXML []byte) (*Response, error) {
 }
 
 func (r *Response) Validate(s *ServiceProviderSettings) error {
-	log.Println(fmt.Sprintf("Validating response %v", r))
 	if r.Version != "2.0" {
 		return errors.New("unsupported SAML Version")
 	}
@@ -371,5 +367,5 @@ func (r *Response) GetAttribute(name string) (values []string) {
 			return
 		}
 	}
-	return
+	return 
 }
