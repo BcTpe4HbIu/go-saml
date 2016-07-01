@@ -1,6 +1,6 @@
 package saml
 
-import "github.com/RobotsAndPencils/go-saml/util"
+import "github.com/BcTpe4HbIu/go-saml/util"
 
 // ServiceProviderSettings provides settings to configure server acting as a SAML Service Provider.
 // Expect only one IDP per SP in this configuration. If you need to configure multipe IDPs for an SP
@@ -9,10 +9,11 @@ type ServiceProviderSettings struct {
 	PublicCertPath              string
 	PrivateKeyPath              string
 	IDPSSOURL                   string
+	IDPSSOLogoutURL             string
 	IDPSSODescriptorURL         string
 	IDPPublicCertPath           string
 	AssertionConsumerServiceURL string
-        SPSignRequest               bool
+	SPSignRequest               bool
 
 	hasInit       bool
 	publicCert    string

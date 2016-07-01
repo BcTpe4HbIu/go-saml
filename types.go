@@ -6,43 +6,45 @@ type AuthnRequest struct {
 	XMLName                        xml.Name
 	SAMLP                          string                `xml:"xmlns:samlp,attr"`
 	SAML                           string                `xml:"xmlns:saml,attr"`
-	SAMLSIG                        string                `xml:"xmlns:samlsig,attr"`
+	SAMLSIG                        string                 `xml:"xmlns:samlsig,attr,omitempty"`
 	ID                             string                `xml:"ID,attr"`
 	Version                        string                `xml:"Version,attr"`
-	ProtocolBinding                string                `xml:"ProtocolBinding,attr"`
+	ProtocolBinding                string                 `xml:"ProtocolBinding,attr,omitempty"`
 	AssertionConsumerServiceURL    string                `xml:"AssertionConsumerServiceURL,attr"`
 	IssueInstant                   string                `xml:"IssueInstant,attr"`
-	// AssertionConsumerServiceIndex  int                   `xml:"AssertionConsumerServiceIndex,attr"`
-	// AttributeConsumingServiceIndex int                   `xml:"AttributeConsumingServiceIndex,attr"`
+	Destination                    string                 `xml:"Destination,attr,omitempty"`
+	AssertionConsumerServiceIndex  int                    `xml:"AssertionConsumerServiceIndex,attr,omitempty"`
+	AttributeConsumingServiceIndex int                    `xml:"AttributeConsumingServiceIndex,attr,omitempty"`
+	ForceAuthn                     string                 `xml:"ForceAuthn,attr,omitempty"`
 	Issuer                         Issuer                `xml:"Issuer"`
-	NameIDPolicy                   NameIDPolicy          `xml:"NameIDPolicy"`
-	RequestedAuthnContext          RequestedAuthnContext `xml:"RequestedAuthnContext"`
-	Signature                      Signature             `xml:"Signature,omitempty"`
+	Signature                      []Signature            `xml:"Signature,omitempty"`
+	NameIDPolicy                   *NameIDPolicy          `xml:"NameIDPolicy,omitempty"`
+	RequestedAuthnContext          *RequestedAuthnContext `xml:"RequestedAuthnContext,omitempty"`
 	originalString                 string
 }
 
 type Issuer struct {
 	XMLName xml.Name
-	SAML    string `xml:"xmlns:saml,attr"`
+	SAML    string `xml:"xmlns:saml,attr,omitempty"`
 	Url     string `xml:",innerxml"`
 }
 
 type NameIDPolicy struct {
 	XMLName     xml.Name
-	AllowCreate bool   `xml:"AllowCreate,attr"`
+	AllowCreate bool   `xml:"AllowCreate,attr,omitempty"`
 	Format      string `xml:"Format,attr"`
 }
 
 type RequestedAuthnContext struct {
 	XMLName              xml.Name
-	SAMLP                string               `xml:"xmlns:samlp,attr"`
+	SAMLP                string               `xml:"xmlns:samlp,attr,omitempty"`
 	Comparison           string               `xml:"Comparison,attr"`
 	AuthnContextClassRef AuthnContextClassRef `xml:"AuthnContextClassRef"`
 }
 
 type AuthnContextClassRef struct {
 	XMLName   xml.Name
-	SAML      string `xml:"xmlns:saml,attr"`
+	SAML      string `xml:"xmlns:saml,attr,omitempty"`
 	Transport string `xml:",innerxml"`
 }
 
@@ -56,9 +58,9 @@ type Signature struct {
 
 type SignedInfo struct {
 	XMLName                xml.Name
-	CanonicalizationMethod CanonicalizationMethod
-	SignatureMethod        SignatureMethod
-	SamlsigReference       SamlsigReference
+	CanonicalizationMethod CanonicalizationMethod `xml:"CanonicalizationMethod"`
+	SignatureMethod        SignatureMethod        `xml:"SignatureMethod"`
+	SamlsigReference       SamlsigReference       `xml:"Reference"`
 }
 
 type SignatureValue struct {
@@ -96,7 +98,7 @@ type X509Data struct {
 
 type Transforms struct {
 	XMLName   xml.Name
-	Transform Transform
+	Transforms []Transform
 }
 
 type DigestMethod struct {
@@ -187,11 +189,25 @@ type Response struct {
 	InResponseTo string `xml:"InResponseTo,attr"`
 
 	Assertion Assertion `xml:"Assertion"`
+	EncryptedAssertion EncryptedAssertion `xml:"EncryptedAssertion"`
 	Signature Signature `xml:"Signature"`
 	Issuer    Issuer    `xml:"Issuer"`
 	Status    Status    `xml:"Status"`
-
 	originalString string
+}
+
+type EncryptedData struct {
+	XMLName xml.Name
+	Type    string `xml:"Type,attr"`
+}
+
+type EncryptedAssertion struct {
+	XMLName       xml.Name
+	EncryptedData *EncryptedData `xml:"EncryptedData"`
+
+	// "Assertion" nodes are not valid here according to the SAML assertion schema, but they are implied by the
+	// XMLEnc standard as an intermediate form, and therefore in the files that 'xmlsec1 --decrypt' returns.
+	Assertion *Assertion `xml:"Assertion"`
 }
 
 type Assertion struct {
@@ -203,9 +219,15 @@ type Assertion struct {
 	SAML               string `xml:"saml,attr"`
 	IssueInstant       string `xml:"IssueInstant,attr"`
 	Issuer             Issuer `xml:"Issuer"`
+	Signature          Signature `xml:"Signature"`
 	Subject            Subject
 	Conditions         Conditions
 	AttributeStatement AttributeStatement
+	AuthnStatement     AuthnStatement
+}
+
+type AuthnStatement struct {
+	SessionIndex string `xml:"SessionIndex,attr"`
 }
 
 type Conditions struct {
@@ -239,7 +261,7 @@ type SubjectConfirmationData struct {
 
 type NameID struct {
 	XMLName xml.Name
-	Format  string `xml:",attr"`
+	Format  string `xml:",attr,omitempty"`
 	Value   string `xml:",innerxml"`
 }
 
@@ -259,10 +281,30 @@ type Attribute struct {
 	Name           string `xml:",attr"`
 	FriendlyName   string `xml:",attr"`
 	NameFormat     string `xml:",attr"`
-	AttributeValue AttributeValue
+	AttributeValue []AttributeValue
 }
 
 type AttributeStatement struct {
 	XMLName    xml.Name
 	Attributes []Attribute `xml:"Attribute"`
+}
+
+type LogoutRequest struct {
+	XMLName      xml.Name
+	SAMLP        string         `xml:"xmlns:samlp,attr"`
+	SAML         string         `xml:"xmlns:saml,attr"`
+	SAMLSIG      string         `xml:"xmlns:samlsig,attr,omitempty"`
+	ID           string         `xml:"ID,attr"`
+	Version      string         `xml:"Version,attr"`
+	IssueInstant string         `xml:"IssueInstant,attr"`
+	Destination  string         `xml:"Destination,attr,omitempty"`
+	Issuer       Issuer         `xml:"Issuer"`
+	Signature    *Signature     `xml:"Signature,omitempty"`
+	NameID       NameID         `xml:"NameID"`
+	SessionIndex []SessionIndex `xml:"SessionIndex"`
+}
+
+type SessionIndex struct {
+	XMLName xml.Name
+	Value   string `xml:",innerxml"`
 }
